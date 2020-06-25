@@ -19,7 +19,7 @@ Note: It's recommended to update/overwrite important files like grading/testing 
 ```bash
 wget https://raw.githubusercontent.com/TestOrgJustAymeric/Exercice1/master/scripts/classroom_actions.sh;
 chmod -x ./classroom_actions.sh;
-sh ./classroom_actions.sh;
+bash ./classroom_actions.sh;
 ```
 
 ## How to update/overwrite specific files
