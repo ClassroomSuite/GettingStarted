@@ -14,8 +14,8 @@ class Widgets:
         self._get_filtered_db = get_filtered_db
         self._create()
         self._add_functionality()
-        self.update_selection_options()
         self._display(out)
+        self.update_selection_options()
 
     def _create(self):
         default_layout = widgets.Layout(width='auto', height='auto')
@@ -143,7 +143,7 @@ class Widgets:
         self.wg[
             'request_url'].value = f'https://raw.githubusercontent.com/{org}/%Repository name containing: {repository_filter}%/master/{filename}'
 
-    def _update_file_view(self):
+    def _update_file_view(self, file=None, line_scores=None):
         selection = self.wg['repository_select'].value
         try:
             file = self.files[selection]
