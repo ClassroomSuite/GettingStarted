@@ -1,4 +1,5 @@
 import threading
+import time
 
 import ipywidgets as widgets
 from IPython import display
@@ -8,13 +9,72 @@ import submissions_viewer.grades.grades_wg
 import submissions_viewer.grades.plots
 
 
+def _display(out: widgets.Output, content, clear_output=True):
+    @out.capture(clear_output=clear_output, wait=True)
+    def _display_out():
+        display.display(content)
+        time.sleep(1)
+
+    _display_out()
+
+
+class Runner:
+    def __init__(self,
+                 url,
+                 filter_value,
+                 update_interval,
+                 interrupt_refresh_plots,
+                 outs: widgets.Output
+                 ):
+        self.url = url
+        self.filter_value = filter_value
+        self.update_interval = update_interval
+        self.interrupt_refresh_plots = interrupt_refresh_plots
+        self.outs = outs
+        self.db = submissions_viewer.grades.gradesDB.GradesDB()
+
+    def __call__(self):
+        self.interrupt_refresh_plots.clear()
+        threading.Timer(3600, lambda _: self.interrupt_refresh_plots.set).start()
+        interval_timeout = threading.Event()
+        plots = submissions_viewer.grades.plots.Plots()
+        while not self.interrupt_refresh_plots.is_set():
+            interval_timeout.clear()
+            threading.Timer(self.update_interval, interval_timeout.set).start()
+            self.refresh_plots(plots)
+            while True:
+                if interval_timeout.wait(timeout=1):
+                    break
+                if self.interrupt_refresh_plots.wait(timeout=1):
+                    break
+
+    def _pull_and_filter_db(self):
+        self.db.pull_db(self.url)
+        if self.filter_value == 'All':
+            return self.db.filter_db('')
+        else:
+            return self.db.filter_db(self.filter_value)
+
+    def refresh_plots(self, plots):
+        filtered_db = self._pull_and_filter_db()
+        figs = []
+        for i in range(4):
+            time.sleep(1)
+            _display(
+                self.outs[i],
+                plots.num_passing_per_test(filtered_db),
+                clear_output=False
+            )
+
+
 class Controller:
-    def __init__(self, out):
-        self.out = out
+    def __init__(self, ui_out, plots_out):
+        self.ui_out = ui_out
+        self.plots_out = plots_out
         self.wg = submissions_viewer.grades.grades_wg.Widgets()
         self.db = submissions_viewer.grades.gradesDB.GradesDB()
         self.interrupt_refresh_plots = threading.Event()
-
+        self.wg['search_filter']
         self.wg['update_url'].on_click(
             lambda _: self.apply_url(),
         )
@@ -22,9 +82,13 @@ class Controller:
             handler=lambda _: self.apply_filter(),
             names=['value']
         )
-        self.wg['interrupt_button'].on_click(lambda _: self.interrupt_refresh_plots.set())
-        self.wg['resume_button'].on_click(lambda _: self.start())
-        self.wg._display(out[0])
+        self.wg['interrupt_button'].on_click(lambda _: self.apply_interrupt())
+        self.wg['resume_button'].on_click(lambda _: self.apply_resume())
+        self.wg._display(self.ui_out)
+
+    def apply_interrupt(self):
+        self.interrupt_refresh_plots.set()
+        self.set_widgets_interaction(disabled=False)
 
     def apply_filter(self):
         filter_value = self.wg['search_filter'].value
@@ -45,67 +109,33 @@ class Controller:
 
     def pull_and_filter_db(self):
         self.db.pull_db(self.wg['url'].value)
-        filter_value = ""
         if self.wg['dropdown'].value == 'All':
-            filter_value = self.wg['search_filter'].value
+            return self.db.filter_db(self.wg['search_filter'].value)
         else:
-            filter_value = self.wg['dropdown'].value
-        filtered_db = self.db.filter_db(filter_value)
-        return filtered_db
+            return self.db.filter_db(self.wg['dropdown'].value)
 
-    def refresh_plots(self):
-        filtered_db = self.pull_and_filter_db()
-        # self.plots_out.clear_output(wait=True)
-        plots = submissions_viewer.grades.plots.Plots(filtered_db)
-        self._display(self.out[1], plots.figs[0])
-        # plt.Text(str=f'Timestamp: {datetime.datetime.now().strftime("%H:%M:%S")}')
-        # plt.show()
-        # display.display(f'Timestamp: {datetime.datetime.now().strftime("%H:%M:%S")}')
-        # print(f'Timestamp: {datetime.datetime.now().strftime("%H:%M:%S")}')
-        # for out, fig in zip(list(self.out.values())[1:], plots.figs):
-        # out.clear_output(wait=True)
-        #    self.display_out(out, fig)
-        # for fig in plots.figs:
-        #    plt.close(fig)
-        # fig.show()
-        # display.display(fig)
-        # images = plots.to_png()
-        # for i, img in enumerate(images):
-        # self.wg.update_image(i, img)
-        # self.wg.add_image(i, img)
-        # plt.imshow(img)
-        # display.display(img)
+    def set_widgets_interaction(self, disabled: bool):
+        self.wg['url'].disabled = disabled
+        self.wg['update_url'].disabled = disabled
+        self.wg['search_filter'].disabled = disabled
+        self.wg['dropdown'].disabled = disabled
+        self.wg['update_interval'].disabled = disabled
+        self.wg['resume_button'].disabled = disabled
+        self.wg['interrupt_button'].disabled = not disabled
 
-    def _display(self, out: widgets.Output, content):
-
-        @out.capture()
-        def _display_out():
-            display.clear_output(True)
-            display.display(content)
-
-        _display_out()
-
-    def start(self):
+    def apply_resume(self):
         for thread in threading.enumerate():
             if thread.getName() == 'refresh_plots':
                 thread.join(timeout=0)
-        threading.Thread(name='refresh_plots', target=self.run, daemon=True).start()
-
-    def run(self):
-        interval_timeout = threading.Event()
-        self.interrupt_refresh_plots.clear()
-        threading.Timer(3600, lambda _: self.interrupt_refresh_plots.set).start()
-        while not self.interrupt_refresh_plots.is_set():
-            interval_timeout.clear()
-            threading.Timer(self.wg['update_interval'].value, interval_timeout.set).start()
-            self.refresh_plots()
-            # display.display(widgets.Label(f'Timestamp: {datetime.datetime.now().strftime("%H:%M:%S")}'))
-            while True:
-                if interval_timeout.wait(timeout=1):
-                    break
-                if self.interrupt_refresh_plots.wait(timeout=1):
-                    break
-        self.refresh_plots()
-        # plt.Text(str='Interrupted')
-        # plt.show()
-        # display.display(widgets.Label('Interrupted'))
+        self.set_widgets_interaction(disabled=True)
+        filter_value = self.wg['search_filter'].value \
+            if self.wg['dropdown'].value == 'All' \
+            else self.wg['dropdown'].value
+        runner = Runner(
+            url=self.wg['url'].value,
+            filter_value=filter_value,
+            update_interval=self.wg['update_interval'].value,
+            interrupt_refresh_plots=self.interrupt_refresh_plots,
+            outs=self.plots_out
+        )
+        threading.Thread(name='refresh_plots', target=runner, daemon=True).start()
