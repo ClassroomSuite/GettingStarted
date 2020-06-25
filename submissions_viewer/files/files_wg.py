@@ -9,14 +9,13 @@ import submissions_viewer.files.utils
 class Widgets:
     def __init__(self, out: widgets.Output, get_filtered_db):
         self.wg = dict()
-        self.files = []
-        self.scores = []
-        self._selected_index = 0
+        self.files = dict()
+        self.scores = dict()
         self._get_filtered_db = get_filtered_db
         self._create()
         self._add_functionality()
+        self.update_selection_options()
         self._display(out)
-        self.update_files_and_scores()
 
     def _create(self):
         default_layout = widgets.Layout(width='auto', height='auto')
@@ -25,9 +24,9 @@ class Widgets:
             description='Organization',
             layout=default_layout
         )
-        self.wg['repository_prefix'] = widgets.Text(
-            placeholder='Repository name prefix',
+        self.wg['filter'] = widgets.Text(
             description='Filter',
+            placeholder='Must contain',
             layout=default_layout
         )
         self.wg['filename'] = widgets.Text(
@@ -42,14 +41,13 @@ class Widgets:
             disabled=True
         )
         self.wg['get_files'] = widgets.Button(description='Fetch submissions')
-        self.wg['get_files_status'] = widgets.Valid(layout=default_layout)
+        self.wg['get_files_status'] = widgets.Valid(value=True, description='Ready', layout=default_layout)
         self.wg['previous_button'] = widgets.Button(description='Previous')
         self.wg['next_button'] = widgets.Button(description='Next')
         self.wg['open_in_browser'] = widgets.Button(description='Open in GitHub', layout=default_layout)
         self.wg['open_file'] = widgets.Checkbox(description='File only', layout=default_layout)
         self.wg['repository_select'] = widgets.Dropdown(
             description='Select',
-            # options=[''],
             layout=widgets.Layout(width='600px'))
         self.wg['max_preview_lines'] = widgets.IntText(
             value=100,
@@ -96,7 +94,7 @@ class Widgets:
     def _add_functionality(self):
         self.wg['organization'].observe(lambda _: self._update_request_url())
         self.wg['filename'].observe(lambda _: self._update_request_url())
-        self.wg['repository_prefix'].observe(lambda _: self._update_request_url())
+        self.wg['filter'].observe(lambda _: self._apply_filter())
         self.wg['max_preview_lines'].observe(lambda _: self._update_max_preview_lines())
         self.wg['get_files'].on_click(lambda _: self.update_files_and_scores())
         self.wg['previous_button'].on_click(lambda _: self._select_previous())
@@ -110,7 +108,7 @@ class Widgets:
         def _display():
             display.display(self.wg['organization'])
             display.display(self.wg['filename'])
-            display.display(self.wg['repository_prefix'])
+            display.display(self.wg['filter'])
             display.display(self.wg['request_url'])
             display.display(widgets.HBox((self.wg['get_files'], self.wg['get_files_status'])))
             display.display(
@@ -120,6 +118,11 @@ class Widgets:
             display.display(self.wg['accordion'])
 
         _display()
+
+    def _apply_filter(self):
+        self._update_request_url()
+        self.update_selection_options()
+        self._apply_select()
 
     def _update_max_preview_lines(self):
         self.wg['preview_lines_range'].max = self.wg['max_preview_lines'].value
@@ -136,93 +139,102 @@ class Widgets:
     def _update_request_url(self):
         org = self.wg['organization'].value
         filename = self.wg['filename'].value
-        repository_prefix = self.wg['repository_prefix'].value
+        repository_filter = self.wg['filter'].value
         self.wg[
-            'request_url'].value = f'https://raw.githubusercontent.com/{org}/%Repository name containing: {repository_prefix}%/master/{filename}'
+            'request_url'].value = f'https://raw.githubusercontent.com/{org}/%Repository name containing: {repository_filter}%/master/{filename}'
 
-    def _update_file_view(self, selected_index=None):
-        if selected_index is not None:
-            self._selected_index = selected_index
+    def _update_file_view(self):
+        selection = self.wg['repository_select'].value
         try:
-            file = self.files[self._selected_index]
-            line_scores = self.scores[self._selected_index]
-            self.wg['file_view_stats'].value = '<pre><code>' + ''.join(line_scores) + '</code></pre>'
-            self.wg['file_view'].value = '<pre><code>' + file + '</code></pre>'
-        except IndexError as e:
+            file = self.files[selection]
+            line_scores = self.scores[selection]
+        except KeyError:
             self.wg['file_view_stats'].value = '<p>Couldn\'t get stats</p>'
             self.wg['file_view'].value = '<p>Couldn\'t get file</p>'
+        else:
+            self.wg['file_view_stats'].value = '<pre><code>' + ''.join(line_scores) + '</code></pre>'
+            self.wg['file_view'].value = '<pre><code>' + file + '</code></pre>'
 
-    def _update_file_preview(self, selected_index=None):
-        if selected_index is not None:
-            self._selected_index = selected_index
+    def _update_file_preview(self):
+        selection = self.wg['repository_select'].value
         try:
-            file = self.files[self._selected_index]
-            line_scores = self.scores[self._selected_index]
+            file = self.files[selection]
+            line_scores = self.scores[selection]
+        except KeyError:
+            self.wg['file_preview_stats'].value = '<p>Couldn\'t get stats</p>'
+            self.wg['file_preview'].value = '<p>Couldn\'t get file</p>'
+        else:
             lines_range = self.wg['preview_lines_range']
             file_lines = [line + '\n' for line in file.split('\n')]
             selected_lines = file_lines[lines_range.lower: min(lines_range.upper, len(file_lines))]
             selected_scores = line_scores[lines_range.lower: min(lines_range.upper, len(line_scores))]
             self.wg['file_preview_stats'].value = '<pre><code>' + ''.join(selected_scores) + '</code></pre>'
             self.wg['file_preview'].value = '<pre><code>' + ''.join(selected_lines) + '</code></pre>'
-        except IndexError as e:
-            self.wg['file_preview_stats'].value = '<p>Couldn\'t get stats</p>'
-            self.wg['file_preview'].value = '<p>Couldn\'t get file</p>'
 
-    def update_files_and_scores(self):
+    def _get_request_urls(self, repository_names):
         org = self.wg['organization'].value
         filename = self.wg['filename'].value
-        repository_names = self._get_repository_names()
         urls = list(map(
             lambda
                 repo: f'https://raw.githubusercontent.com/{org}/{repo}/master/{filename}',
             repository_names
         ))
-        self.files = []
+        return urls
+
+    def _get_files(self, urls):
+        files = []
         self.wg['get_files_status'].value = True
         self.wg['get_files_status'].description = f'Success'
         for url in urls:
             try:
                 file = submissions_viewer.files.utils.get_file(url)
-                self.files.append(file)
+                files.append(file)
             except Exception as e:
-                self.files.append('Couldn\'t get file')
+                files.append('Couldn\'t get file')
                 self.wg['get_files_status'].value = False
                 self.wg['get_files_status'].description = f'{e}'
-        files_scores = submissions_viewer.files.utils.get_scores(self.files)
-        formated_scores = []
-        for scores in files_scores:
-            formated_scores.append(
-                list(map(
-                    lambda score: f'{100 * score / len(files_scores):.2f}% ({score}/{len(files_scores)})\n',
-                    scores
-                ))
-            )
-        self.scores = formated_scores
-        self.wg['repository_select'].options = repository_names
-        self._update_file_preview()
-        self._update_file_view()
-        self._update_repository_grading()
+        return files
+
+    def update_selection_options(self):
+        repository_names = self._get_filtered_repository_names()
+        if len(repository_names) > 0:
+            self.wg['repository_select'].options = repository_names
+            self.wg['repository_select'].value = repository_names[0]
+        else:
+            self.wg['repository_select'].options = ['Not found']
+            self.wg['repository_select'].value = 'Not found'
+
+    def update_files_and_scores(self):
+        self.update_selection_options()
+        repository_names = self._get_filtered_repository_names()
+        urls = self._get_request_urls(repository_names)
+        files = self._get_files(urls)
+        formatted_scores = submissions_viewer.files.utils.get_formatted_scores(files)
+        self.files = dict(zip(repository_names, files))
+        self.scores = dict(zip(repository_names, formatted_scores))
+        self._apply_select()
 
     def _select_previous(self):
-        self._selected_index = max(0, self._selected_index - 1)
-        self.wg['repository_select'].value = list(self.wg['repository_select'].options)[self._selected_index]
+        options = list(self.wg['repository_select'].options)
+        index = options.index(self.wg['repository_select'].value)
+        new_index = max(0, index - 1)
+        self.wg['repository_select'].value = options[new_index]
+        self._apply_select()
 
     def _select_next(self):
-        self._selected_index = min(len(self.files) - 1, self._selected_index + 1)
-        self.wg['repository_select'].value = list(self.wg['repository_select'].options)[self._selected_index]
+        options = list(self.wg['repository_select'].options)
+        index = options.index(self.wg['repository_select'].value)
+        new_index = min(len(options) - 1, index + 1)
+        self.wg['repository_select'].value = options[new_index]
+        self._apply_select()
 
     def _apply_select(self):
-        try:
-            selected = self.wg['repository_select'].value
-            self._selected_index = list(self.wg['repository_select'].options).index(selected)
-        except ValueError:
-            self._selected_index = 0
+        self._update_repository_grading()
         self._update_file_preview()
         self._update_file_view()
-        self._update_repository_grading()
 
     def _update_repository_grading(self):
-        filter_value = self.wg['repository_prefix'].value
+        filter_value = self.wg['filter'].value
         filtered_db = self._get_filtered_db(filter_value)
         try:
             test_dict = filtered_db[self.wg['repository_select'].value]
@@ -234,7 +246,7 @@ class Widgets:
         except:
             self.wg['repository_grading'].value = '<p>Couldn\'t apply grading</p>'
 
-    def _get_repository_names(self):
-        filter_value = self.wg['repository_prefix'].value
+    def _get_filtered_repository_names(self):
+        filter_value = self.wg['filter'].value
         filtered_db = self._get_filtered_db(filter_value)
         return list(filtered_db.keys())
