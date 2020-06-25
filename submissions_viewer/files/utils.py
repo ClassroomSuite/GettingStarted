@@ -30,7 +30,20 @@ def score_lines(file, line_counts):
     return scores
 
 
-def get_scores(files):
+def _get_scores(files):
     line_counts = get_line_counts(files)
     files_scores = list(map(lambda file: score_lines(file, line_counts), files))
     return files_scores
+
+
+def get_formatted_scores(files):
+    files_scores = _get_scores(files)
+    formatted_scores = []
+    for scores in files_scores:
+        formatted_scores.append(
+            list(map(
+                lambda score: f'{100 * score / len(files_scores):.2f}% ({score}/{len(files_scores)})\n',
+                scores
+            ))
+        )
+    return formatted_scores
