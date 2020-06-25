@@ -36,7 +36,7 @@ class Widgets:
             layout=default_layout,
             continuous_update=True
         )
-        self.wg['interrupt_button'] = widgets.Button(description='Interrupt')
+        self.wg['interrupt_button'] = widgets.Button(description='Interrupt', disabled=True)
         self.wg['resume_button'] = widgets.Button(description='Resume')
 
     def add_image(self, index, image):
