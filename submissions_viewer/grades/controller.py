@@ -1,13 +1,15 @@
 import threading
 import time
-
+import PIL
+from PIL import Image
+import os
 import ipywidgets as widgets
 from IPython import display
-
+from matplotlib import pyplot as plt
 import submissions_viewer.grades.gradesDB
 import submissions_viewer.grades.grades_wg
-import submissions_viewer.grades.plots
-#dtyjydjyjt
+import submissions_viewer.grades.figures
+
 
 def _display(out: widgets.Output, content, clear_output=True):
     @out.capture(clear_output=clear_output, wait=True)
@@ -37,11 +39,12 @@ class Runner:
         self.interrupt_refresh_plots.clear()
         threading.Timer(3600, lambda _: self.interrupt_refresh_plots.set).start()
         interval_timeout = threading.Event()
-        plots = submissions_viewer.grades.plots.Plots()
+
+        figures = submissions_viewer.grades.figures.Figures()
         while not self.interrupt_refresh_plots.is_set():
             interval_timeout.clear()
             threading.Timer(self.update_interval, interval_timeout.set).start()
-            self.refresh_plots(plots)
+            self.show_figures(figures)
             while True:
                 if interval_timeout.wait(timeout=1):
                     break
@@ -55,16 +58,20 @@ class Runner:
         else:
             return self.db.filter_db(self.filter_value)
 
-    def refresh_plots(self, plots):
+    def show_figures(self, plots):
         filtered_db = self._pull_and_filter_db()
-        figs = []
+        if not os.path.exists('./figs'):
+            os.mkdir('./figs')
         for i in range(4):
-            time.sleep(1)
-            _display(
-                self.outs[i],
-                plots.num_passing_per_test(filtered_db),
-                clear_output=False
-            )
+            fig = plots.num_passing_per_test(filtered_db)
+            fig.savefig(f'./figs/fig{i}.png')
+            plt.close(fig)
+            with Image.open(f'./figs/fig{i}.png') as img:
+                _display(
+                    self.outs[i],
+                    img,
+                    clear_output=False
+                )
 
 
 class Controller:
