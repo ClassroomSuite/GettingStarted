@@ -1,3 +1,4 @@
+# Deprecated
 # Update specific files in student repositories
 ## Use cases
 
