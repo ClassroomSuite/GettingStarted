@@ -40,7 +40,6 @@ The database has the following format:
         }
     }
 }
-
 ```
 
 ## Recommendations
