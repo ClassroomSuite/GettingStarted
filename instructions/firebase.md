@@ -3,7 +3,7 @@ Firebase is Google's mobile platform that helps you quickly develop high-quality
 
 The Firebase Realtime Database is a cloud-hosted NoSQL database that lets you store and sync data between your users in realtime.
 
-# Usage
+## Usage
 Firebase Realtime Database is used to host and sync data regarding automated tests in student repositories.
 
 During class exercises:
@@ -43,14 +43,14 @@ The database has the following format:
 
 ```
 
-# Recommendations
+## Recommendations
 * You can keep the same Firebase project for across semesters
 * You should empty your database at least after each semester to reduce download size 
 * You should only have to use the free plan
 * Avoid using the database for collecting assignment results as their is currently no safe way to used it.
     * Student's have access to repository secrets. Therefore, it's impossible to prevent a student from using said secrets to change their results in the database (even if additional authentication is used for the database).
 
-# Steps
+## Steps
 1. [Create a project](https://console.firebase.google.com/)
 2. Add a Realtime Database
     * https://firebase.google.com/products/realtime-database/
