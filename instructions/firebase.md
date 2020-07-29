@@ -1,7 +1,7 @@
 # Firebase
 Firebase is Google's mobile platform that helps you quickly develop high-quality apps and grow your business.
 
-The Firebase Realtime Database is a cloud-hosted NoSQL database that lets you store and sync data between your users in realtime.
+Firebase Realtime Database is a cloud-hosted NoSQL database that lets you store and sync data between your users in realtime.
 
 ## Usage
 Firebase Realtime Database is used to host and sync data regarding automated tests in student repositories.
