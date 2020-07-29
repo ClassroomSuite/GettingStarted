@@ -75,4 +75,7 @@ and [FAQ](https://firebase.google.com/support/faq#pricing)
 7. Test your link in a web browser
     * You should see the contents of your database
 8. Save your link, you'll need it later
-9. For each GitHub organization used to store student repositories, create a new [organization secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-an-organization) named FIREBASE_DB_URL with its value set to your link. Set Repository access to public repositories.
+9. For each GitHub organization used to store student repositories, create a new [organization secret](https://docs.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-an-organization) with:
+   * Name: FIREBASE_DB_URL
+   * Value: your saved link
+   * Repository access: public repositories
