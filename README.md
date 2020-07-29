@@ -1,6 +1,6 @@
 # Getting started
 
-## 1. Setting up GitHub
+## Steps
 1. Create your [GitHub organizations](instructions/organizations.md)
 2. Create your [GitHub classrooms](instructions/classrooms.md)
 3. Create your [assignments and exercises](instructions/assignments.md)
