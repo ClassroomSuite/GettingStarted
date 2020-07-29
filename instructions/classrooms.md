@@ -1,7 +1,7 @@
 # GitHub Classrooms
 A classroom is the basic foundational unit of GitHub Classroom where teachers can organize and manage assignments, students, and teaching assistants around a single course. Classrooms require admin (owner) access to GitHub organization accounts which are managed on github.com, not classroom.github.com.
 
-# Help
+## Help
 * [Video tutorials](https://classroom.github.com/videos)
 * [Get help with GitHub Classroom](https://classroom.github.com/help)
 
