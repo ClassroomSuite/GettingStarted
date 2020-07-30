@@ -20,7 +20,7 @@ Pull requests are a great way to request feedback for code you worked on. Pull r
 
 ## Steps
 1. Students work on a branch (usually the master branch) of their respective repository until the assignment deadline.
-2. Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline.
+2. Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.
 3. Update students repositories workflows and files to ensure testing/grading files are up-to-date and can be trusted (as some students may have modified them).
 2. After the deadline, create a new branch from the first commit of the master branch for each student repository on GitHub.
 4. Create a pull request to merge the student's branch with all the student's commits into your new "grading" branch.
