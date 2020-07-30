@@ -17,3 +17,4 @@ security and administrative features.
 3. Associate your organization
     *  with your personal GitHub account (Recommended)
     *  with a business or institution
+4. For organizations with student repositories, make sure that [member base permissions](https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/setting-base-permissions-for-an-organization) is set to None. This will make sure students are unable to view private repositories they don't have direct access to such as assignments from others. 
