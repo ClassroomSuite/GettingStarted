@@ -20,12 +20,15 @@ Pull requests are a great way to request feedback for code you worked on. Pull r
 
 ## Steps
 1. Students work on a branch (usually the master branch) of their respective repository until the assignment deadline.
-2. Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.
+2. Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.
+    * Or create a new protected branch with student commits upon deadline timeout. You may allow students to keep pushing changes to the master branch after the deadline. Students won't be able to modify protected branches and related pull requests.
 3. Update students repositories workflows and files to ensure testing/grading files are up-to-date and can be trusted (as some students may have modified them).
 2. After the deadline, create a new branch from the first commit of the master branch for each student repository on GitHub.
 4. Create a pull request to merge the student's branch with all the student's commits into your new "grading" branch.
-5. Ensure that tests are ran on the desired branch if using automated testing.
+5. Ensure that tests/scripts/worlflows are ran on the desired branch.
 6. Provide feedback by reviewing the pull request using GitHub.
 7. Add a grading report in the student's repository.
+
+Note: Protected branches are available in public repositories with GitHub Free and GitHub Free for organizations, and in public and private repositories with GitHub Pro, GitHub Team, GitHub Enterprise Cloud, and GitHub Enterprise Server.
 
 Note: For students with more experience with git and GitHub, it's possible to [protect the master branch](https://docs.github.com/en/github/administering-a-repository/configuring-protected-branches) (this can be accomplished on the assignment template repository beforehand) and require students to work on their own unprotected branches. Students will then have to create pull requests (to merge their branch into the master branch). The teacher will able to review and provide feedback on these requests. This way of giving feedback is closer to how GitHub is used in the workplace.
