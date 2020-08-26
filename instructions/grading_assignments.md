@@ -1,6 +1,7 @@
-# Graphs and statistics
+# Assignment grading
+## Graphs and statistics
 View [repository graphs](https://docs.github.com/en/github/visualizing-repository-data-with-graphs/about-repository-graphs)
-## Contributor graphs
+### Contributor graphs
 * View different types of contributions over a selected period of time with [GitHub Insights/Contributors](https://docs.github.com/en/github/visualizing-repository-data-with-graphs/viewing-a-projects-contributors):
     * additions
     * deletions
@@ -10,15 +11,15 @@ View [repository graphs](https://docs.github.com/en/github/visualizing-repositor
 * View all commits from a specific student
     * This is can also be accomplished by appending the following to a repository URL: <br>[/commits?author=username]()
     * e.g [https://github.com/OrgName/RepoName/commits?author=student_username]()
-# Grading using pull requests
+## Grading using pull requests
 Pull requests are a great way to request feedback for code you worked on. Pull request reviewers can view file changes and commits, they can comment on specific lines of code with code suggestions commentsGitHub makes it easy to review code. You can view all the commits changes, view commits, Pull requests
 
-##Help
+###Help
 * [Collaborating with issues and pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests)
 * [Commenting on a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#about-pull-request-comments)
 * [About pull request reviews](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-request-reviews)
 
-## Steps
+### Steps
 1. Students work on a branch (usually the master branch) of their respective repository until the assignment deadline.
 2. Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.Set access permissions to pull (read-only) to prevent students from pushing changes after the deadline. This will also prevent students from merging or closing pull requests.
     * Or create a new protected branch with student commits upon deadline timeout. You may allow students to keep pushing changes to the master branch after the deadline. Students won't be able to modify protected branches and related pull requests.
