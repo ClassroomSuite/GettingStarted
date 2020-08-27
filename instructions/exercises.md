@@ -20,7 +20,7 @@
         * [Create individual assignment (tutorial)](https://classroom.github.com/help/creating-an-individual-assignment)
         * [Create individual assignment (video tutorial)](https://classroom.github.com/videos#rTsfBAV7sOo)
         * [Create group assignment (tutorial)](https://classroom.github.com/help/create-group-assignments)
-        * [Create group assignment (cideo tutorial)](https://classroom.github.com/videos#-52quDR2QSc)
+        * [Create group assignment (video tutorial)](https://classroom.github.com/videos#-52quDR2QSc)
     2. Add an assigment title
     3. Add a custom repository prefix
     4. Leave the deadline option empty
