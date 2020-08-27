@@ -14,7 +14,6 @@
 4. Setup classroom workflows
     * [Update student workflows](../classroom_workflows/update_student_repositories.md)
     * [Verifications](../classroom_workflows/verifications.md)
-    * [Assignment autograding](../classroom_workflows/assignment_autograding.md)
 5. Add your assignment to [GitHub classrooms](./classrooms.md)
     1. Create the assignment
         * [Create individual assignment (tutorial)](https://classroom.github.com/help/creating-an-individual-assignment)
