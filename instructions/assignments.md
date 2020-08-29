@@ -15,7 +15,9 @@
     * [Update student workflows](../classroom_workflows/update_student_repositories.md)
     * [Pylint](../classroom_workflows/pylint.md)
     * [Verifications](../classroom_workflows/verifications.md)
-    * [Assignment autograding](../classroom_workflows/assignment_autograding.md)
+    * [Assignment deadline](../classroom_workflows/assignment_deadline.md)
+    * [Assignment grading](../classroom_workflows/assignment_grading.md)
+    * [Assignment tests](../classroom_workflows/assignment_tests.md)
 5. Add your assignment to [GitHub classrooms](./classrooms.md)
     1. Create the assignment
         * [Create individual assignment (tutorial)](https://classroom.github.com/help/creating-an-individual-assignment)
@@ -35,8 +37,7 @@
     10. No need to enable feedback pull requests
 6. Share the GitHub Classroom assignment link with your students
 7. (optional) Run workflow **Update student repositories**
-8. Verify the deadline workflow within the template repository for the assignment
+8. Verify the [deadline workflow](../classroom_workflows/assignment_deadline.md) within the template repository for the assignment
     * This will create a protected branch with student submissions once the deadline is over
-9. After the deadline, run the grading workflow from the template repository for the assignment
-    * This will remove student write access
-    * View the workflow file to see what else it does 
+9. After the deadline, run the [grading workflow](../classroom_workflows/assignment_grading.md) from the template repository for the assignment
+10. View more information regarding [grading assignments with GitHub](../instructions/grading_assignments.md)
