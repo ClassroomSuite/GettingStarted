@@ -1,4 +1,9 @@
 # Assignment grading
+## Grading workflows
+Run these workflows in order
+1. [Assignment deadline](../classroom_workflows/assignment_deadline.md) (this will run automatically at specified time)
+2. [Assignment grading](../classroom_workflows/assignment_grading.md)
+
 ## Graphs and statistics
 View [repository graphs](https://docs.github.com/en/github/visualizing-repository-data-with-graphs/about-repository-graphs)
 ### Contributor graphs
@@ -11,10 +16,11 @@ View [repository graphs](https://docs.github.com/en/github/visualizing-repositor
 * View all commits from a specific student
     * This is can also be accomplished by appending the following to a repository URL: <br>[/commits?author=username]()
     * e.g [https://github.com/OrgName/RepoName/commits?author=student_username]()
+
 ## Grading using pull requests
 Pull requests are a great way to request feedback for code you worked on. Pull request reviewers can view file changes and commits, they can comment on specific lines of code with code suggestions commentsGitHub makes it easy to review code. You can view all the commits changes, view commits, Pull requests
 
-###Help
+### Help
 * [Collaborating with issues and pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests)
 * [Commenting on a pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#about-pull-request-comments)
 * [About pull request reviews](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-request-reviews)
