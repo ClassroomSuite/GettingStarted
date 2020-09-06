@@ -1,8 +1,9 @@
 # Assignment grading
 ## Grading workflows
 Run these workflows in order
-1. [Assignment deadline](../classroom_workflows/assignment_deadline.md) (this will run automatically at specified time)
-2. [Assignment grading](../classroom_workflows/assignment_grading.md)
+1. Run [Assignment deadline](../classroom_workflows/assignment_deadline.md) (this will run automatically at specified time)
+2. Add test files to template repo
+3. Run [Assignment grading](../classroom_workflows/assignment_grading.md)
 
 ## Graphs and statistics
 View [repository graphs](https://docs.github.com/en/github/visualizing-repository-data-with-graphs/about-repository-graphs)
